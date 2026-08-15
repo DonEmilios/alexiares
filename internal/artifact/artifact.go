@@ -159,3 +159,47 @@ type Timeline struct {
 	VerifiedAt time.Time `json:"verified_at,omitzero"`
 	LastSeen   time.Time `json:"last_seen,omitzero"`
 }
+
+// MatchCategory identifies which kind of indicator produced a Match.
+type MatchCategory string
+
+// Supported correlation categories.
+const (
+	MatchFavicon     MatchCategory = "favicon"
+	MatchJavaScript  MatchCategory = "javascript"
+	MatchCertificate MatchCategory = "certificate"
+	MatchWallet      MatchCategory = "wallet"
+	MatchTelegram    MatchCategory = "telegram"
+	MatchDomain      MatchCategory = "domain"
+	MatchRedirect    MatchCategory = "redirect"
+	MatchIP          MatchCategory = "ip"
+	MatchNameserver  MatchCategory = "nameserver"
+)
+
+// Match is a single correlation hit between a collected target and a
+// signature's indicator.
+type Match struct {
+	SignatureID string        `json:"signature_id"`
+	Category    MatchCategory `json:"category"`
+	Value       string        `json:"value"`
+}
+
+// Cluster groups every Match against a single signature, along with
+// that signature's own description and confidence, so the evidence
+// engine can present "why" alongside "what."
+type Cluster struct {
+	SignatureID string  `json:"signature_id"`
+	Description string  `json:"description"`
+	Confidence  string  `json:"confidence"`
+	Matches     []Match `json:"matches"`
+}
+
+// Correlation is the correlation engine's output: every match found,
+// grouped into per-signature clusters, plus the related infrastructure
+// those matched signatures are already known to carry.
+type Correlation struct {
+	Matches        []Match   `json:"matches"`
+	Clusters       []Cluster `json:"clusters"`
+	RelatedDomains []string  `json:"related_domains"`
+	RelatedWallets []string  `json:"related_wallets"`
+}

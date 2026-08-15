@@ -67,7 +67,13 @@ type Signature struct {
 	Wallets      map[string][]string `yaml:"wallets,omitempty"` // chain -> addresses
 	Telegram     TelegramSignature   `yaml:"telegram,omitempty"`
 	Domains      []string            `yaml:"domains,omitempty"`
-	Confidence   Confidence          `yaml:"confidence"`
+	// IPs and Nameservers record shared hosting infrastructure: medium-
+	// strength evidence per the spec's Evidence Categories, since IPs
+	// and nameservers are shared by unrelated sites far more often than
+	// favicons or scripts are.
+	IPs         []string   `yaml:"ips,omitempty"`
+	Nameservers []string   `yaml:"nameservers,omitempty"`
+	Confidence  Confidence `yaml:"confidence"`
 }
 
 var idPattern = regexp.MustCompile(`^[a-z0-9][a-z0-9_-]*[a-z0-9]$`)
@@ -129,6 +135,9 @@ func (s Signature) hasCriteria() bool {
 		return true
 	}
 	if len(s.Domains) > 0 {
+		return true
+	}
+	if len(s.IPs) > 0 || len(s.Nameservers) > 0 {
 		return true
 	}
 	for _, addrs := range s.Wallets {

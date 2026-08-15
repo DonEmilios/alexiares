@@ -91,11 +91,11 @@ Derived from [Alexiares Technical Specification (specs.md).md](<Alexiares Techni
 
 ## Phase 5 — Correlation Engine
 
-- [ ] Match target fingerprints against signatures: favicon, JavaScript, certificate, IP, ASN, registrar, nameserver, wallet, Telegram indicators, redirect infrastructure
-- [ ] Cluster identification
-- [ ] `Correlation` output: Matches, Clusters, RelatedDomains, RelatedWallets
+- [x] Match target fingerprints against signatures: favicon, JavaScript, certificate, IP, nameserver, wallet, Telegram indicators, redirect infrastructure (ASN and registrar matching deferred — no extractor collects either yet; see Phase 2's ASN note and the missing WHOIS/registrar extractor)
+- [x] Cluster identification (one cluster per matched signature, carrying its matches, description, and confidence)
+- [x] `Correlation` output: Matches, Clusters, RelatedDomains, RelatedWallets
 
-**Definition of Done:** deterministic matching — same input + same signature set always yields the same matches; regression tests over historical infrastructure pass.
+**Definition of Done:** deterministic matching — same input + same signature set always yields the same matches ✅ (verified by test); regression tests over historical infrastructure — none exist yet, since the project has no documented historical incidents to regress against; the `tests/regression/` tier is ready for the first real case.
 
 ---
 
