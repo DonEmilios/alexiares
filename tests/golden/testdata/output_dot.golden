@@ -1,0 +1,6 @@
+digraph alexiares {
+  rankdir=LR;
+  "domain:phish.example" [label="phish.example", shape=box];
+  "favicon:abc123" [label="abc123", shape=ellipse];
+  "domain:phish.example" -> "favicon:abc123" [label="shares_favicon"];
+}

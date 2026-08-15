@@ -1,0 +1,17 @@
+# Alexiares Report: https://phish.example
+
+**Confidence:** HIGH
+
+**Recommendation:** Avoid wallet interaction. Do not connect, sign, or approve.
+
+## Evidence
+
+| Strength | Category | Detection | Signature | Value |
+|---|---|---|---|---|
+| STRONG | favicon | Shared favicon hash | `wallet_drainer_cluster_001` | `-204998123` |
+| STRONG | telegram | Telegram exfiltration indicator | `wallet_drainer_cluster_001` | `api.telegram.org/bot` |
+
+## Related Domains
+
+- claim-rewards-example.xyz
+

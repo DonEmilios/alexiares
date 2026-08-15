@@ -1,0 +1,86 @@
+{
+  "target": "https://phish.example",
+  "confidence": "high",
+  "evidence": [
+    {
+      "category": "favicon",
+      "strength": "strong",
+      "value": "-204998123",
+      "signature_id": "wallet_drainer_cluster_001",
+      "description": "Shared favicon hash"
+    },
+    {
+      "category": "telegram",
+      "strength": "strong",
+      "value": "api.telegram.org/bot",
+      "signature_id": "wallet_drainer_cluster_001",
+      "description": "Telegram exfiltration indicator"
+    }
+  ],
+  "artifacts": {
+    "dns": {
+      "ips": null,
+      "aaaa": null,
+      "nameservers": null,
+      "mx": null,
+      "txt": null
+    },
+    "html": {
+      "forms": null,
+      "metadata": null,
+      "comments": null,
+      "external_resources": null,
+      "title": ""
+    },
+    "javascript": {
+      "script_urls": null,
+      "inline_scripts": null,
+      "sha256": null,
+      "api_endpoints": null,
+      "telegram_refs": null,
+      "discord_webhooks": null,
+      "wallet_libraries": null,
+      "walletconnect_refs": null
+    },
+    "favicon": {
+      "murmur3": 0,
+      "sha256": "",
+      "size": 0
+    },
+    "wallets": {
+      "addresses": null
+    },
+    "telegram": {
+      "bot_tokens": null,
+      "chat_ids": null,
+      "api_refs": null,
+      "links": null
+    },
+    "fingerprints": {}
+  },
+  "graph": {
+    "nodes": [
+      {
+        "id": "domain:phish.example",
+        "type": "domain",
+        "label": "phish.example"
+      },
+      {
+        "id": "favicon:abc123",
+        "type": "favicon",
+        "label": "abc123"
+      }
+    ],
+    "edges": [
+      {
+        "from": "domain:phish.example",
+        "to": "favicon:abc123",
+        "type": "shares_favicon"
+      }
+    ]
+  },
+  "recommendation": "Avoid wallet interaction. Do not connect, sign, or approve.",
+  "related_domains": [
+    "claim-rewards-example.xyz"
+  ]
+}

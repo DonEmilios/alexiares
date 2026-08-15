@@ -1,0 +1,3 @@
+target,category,strength,value,signature_id,description,confidence,recommendation
+https://phish.example,favicon,strong,-204998123,wallet_drainer_cluster_001,Shared favicon hash,high,"Avoid wallet interaction. Do not connect, sign, or approve."
+https://phish.example,telegram,strong,api.telegram.org/bot,wallet_drainer_cluster_001,Telegram exfiltration indicator,high,"Avoid wallet interaction. Do not connect, sign, or approve."

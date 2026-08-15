@@ -112,19 +112,19 @@ Derived from [Alexiares Technical Specification (specs.md).md](<Alexiares Techni
 
 ## Phase 7 — Evidence Engine & Output
 
-- [ ] **Evidence evaluation**
-  - [ ] Strong: shared JS, favicon, certificate, wallet, Telegram exfiltration
-  - [ ] Medium: shared IP, ASN, registrar, redirect chain
-  - [ ] Weak: community observation, domain age, keyword similarity
-- [ ] **Confidence model** — qualitative levels: Low / Medium / High / Critical
-- [ ] **Explainable detections** — every conclusion cites the artifact + matched signature + recommendation
-- [ ] **Output formats**
-  - [ ] Terminal (default)
-  - [ ] JSON (matches schema: target, confidence, evidence, artifacts, graph, recommendation)
-  - [ ] GraphML, DOT, CSV, Markdown
-- [ ] `alexiares report result.json` command
+- [x] **Evidence evaluation**
+  - [x] Strong: shared JS, favicon, certificate, wallet, Telegram exfiltration
+  - [~] Medium: shared IP ✅, redirect chain ✅ — ASN and registrar remain unimplemented (no data source, per Phase 2/5 notes)
+  - [ ] Weak: community observation, domain age, keyword similarity — **not yet wired.** Observations are loadable and validated (Phase 4) but the scan pipeline doesn't consult them; domain age and keyword similarity have no implementation at all. Real gap, not a stub — tracked here for follow-up.
+- [x] **Confidence model** — qualitative levels: Low / Medium / High / Critical (highest confidence among matched clusters wins)
+- [x] **Explainable detections** — every evidence item cites its category, value, matched signature ID, and description; every report carries a recommendation
+- [x] **Output formats**
+  - [x] Terminal (default) — answers the four spec questions; verified end-to-end against a live local server matching the bundled example signature
+  - [x] JSON (matches schema: target, confidence, evidence, artifacts, graph, recommendation) — verified against real output
+  - [x] GraphML, DOT, CSV, Markdown
+- [x] `alexiares report result.json` command — round-trips a saved JSON scan into any other format
 
-**Definition of Done:** output answers the four spec questions (what was found / why suspicious / related infrastructure / confidence); JSON output validates against schema; golden tests lock output stability.
+**Definition of Done:** output answers the four spec questions ✅ (verified live); JSON output validates against schema ✅ (tested); golden tests lock output stability ✅ (`tests/golden/output_test.go`, all 5 non-wallet formats).
 
 ---
 

@@ -1,0 +1,17 @@
+Alexiares — infrastructure intelligence
+
+Target  https://phish.example
+
+Evidence
+  [STRONG]  Shared favicon hash
+            → matches signature wallet_drainer_cluster_001 (favicon: -204998123)
+  [STRONG]  Telegram exfiltration indicator
+            → matches signature wallet_drainer_cluster_001 (telegram: api.telegram.org/bot)
+
+Related infrastructure
+  claim-rewards-example.xyz
+
+Confidence  HIGH
+
+Recommendation
+  Avoid wallet interaction. Do not connect, sign, or approve.
