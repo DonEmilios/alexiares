@@ -138,8 +138,16 @@ type Fingerprints struct {
 	Favicon     string   `json:"favicon,omitempty"`
 	FaviconHash int32    `json:"favicon_murmur3,omitempty"`
 	JavaScript  []string `json:"javascript,omitempty"`
-	HTML        string   `json:"html,omitempty"`
-	Certificate string   `json:"certificate,omitempty"`
+	// HTML is a SHA256 hash of the DOM's tag structure (nesting shape
+	// only — text, attributes, and comments are ignored), matching
+	// only byte-identical page templates.
+	HTML string `json:"html,omitempty"`
+	// HTMLSimilarity is a 64-bit SimHash, hex-encoded, over shingled
+	// tag sequences. Unlike HTML, it supports fuzzy matching: two
+	// pages with a low Hamming distance between their SimHash values
+	// share most of their template even if some sections differ.
+	HTMLSimilarity string `json:"html_similarity,omitempty"`
+	Certificate    string `json:"certificate,omitempty"`
 }
 
 // Timeline preserves when an artifact was first observed, reported,

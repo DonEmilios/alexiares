@@ -63,13 +63,13 @@ Derived from [Alexiares Technical Specification (specs.md).md](<Alexiares Techni
 
 ## Phase 3 — Fingerprint Engine
 
-- [ ] Favicon fingerprints (MurmurHash3, SHA256)
-- [ ] JavaScript fingerprints (SHA256; normalized AST hash deferred)
-- [ ] HTML structural hash + DOM similarity fingerprint
-- [ ] TLS certificate fingerprint
-- [ ] `Fingerprints` struct output (Favicon, JavaScript[], HTML, Certificate)
+- [x] Favicon fingerprints (MurmurHash3, SHA256)
+- [x] JavaScript fingerprints (SHA256; normalized AST hash deferred)
+- [x] HTML structural hash (exact tag-shape SHA256) + DOM similarity fingerprint (64-bit SimHash over tag shingles, Hamming-distance comparable)
+- [x] TLS certificate fingerprint
+- [x] `Fingerprints` struct output (Favicon, JavaScript[], HTML, HTMLSimilarity, Certificate)
 
-**Definition of Done:** identical artifacts always produce identical fingerprints (deterministic); covered by golden tests.
+**Definition of Done:** identical artifacts always produce identical fingerprints (deterministic); covered by golden tests. ✅
 
 ---
 
