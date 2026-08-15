@@ -2,6 +2,7 @@
 /bin/
 /dist/
 /alexiares
+cmd/alexiares/alexiares
 *.exe
 
 # Go
