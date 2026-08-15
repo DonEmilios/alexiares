@@ -49,24 +49,30 @@ func Correlate(target Target, signatures []intel.Signature) artifact.Correlation
 			continue
 		}
 
-		corr.Matches = append(corr.Matches, matches...)
-		corr.Clusters = append(corr.Clusters, artifact.Cluster{
-			SignatureID: sig.ID,
-			Description: sig.Description,
-			Confidence:  string(sig.Confidence),
-			Matches:     matches,
-		})
-
+		clusterDomains := make(map[string]bool)
+		clusterWallets := make(map[string]bool)
 		for _, d := range sig.Domains {
 			if d != target.Domain {
+				clusterDomains[d] = true
 				relatedDomains[d] = true
 			}
 		}
 		for _, addrs := range sig.Wallets {
 			for _, a := range addrs {
+				clusterWallets[a] = true
 				relatedWallets[a] = true
 			}
 		}
+
+		corr.Matches = append(corr.Matches, matches...)
+		corr.Clusters = append(corr.Clusters, artifact.Cluster{
+			SignatureID:    sig.ID,
+			Description:    sig.Description,
+			Confidence:     string(sig.Confidence),
+			Matches:        matches,
+			RelatedDomains: sortedKeys(clusterDomains),
+			RelatedWallets: sortedKeys(clusterWallets),
+		})
 	}
 
 	corr.RelatedDomains = sortedKeys(relatedDomains)

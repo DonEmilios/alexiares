@@ -186,12 +186,18 @@ type Match struct {
 
 // Cluster groups every Match against a single signature, along with
 // that signature's own description and confidence, so the evidence
-// engine can present "why" alongside "what."
+// engine can present "why" alongside "what." RelatedDomains and
+// RelatedWallets are this signature's own known infrastructure (minus
+// the scanned target itself) — the graph engine uses them to connect
+// sibling infrastructure to the same shared node the target matched
+// through.
 type Cluster struct {
-	SignatureID string  `json:"signature_id"`
-	Description string  `json:"description"`
-	Confidence  string  `json:"confidence"`
-	Matches     []Match `json:"matches"`
+	SignatureID    string   `json:"signature_id"`
+	Description    string   `json:"description"`
+	Confidence     string   `json:"confidence"`
+	Matches        []Match  `json:"matches"`
+	RelatedDomains []string `json:"related_domains,omitempty"`
+	RelatedWallets []string `json:"related_wallets,omitempty"`
 }
 
 // Correlation is the correlation engine's output: every match found,

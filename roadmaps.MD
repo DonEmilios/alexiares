@@ -101,12 +101,12 @@ Derived from [Alexiares Technical Specification (specs.md).md](<Alexiares Techni
 
 ## Phase 6 — Graph Engine
 
-- [ ] Node types: Domain, URL, IP, ASN, Certificate, Favicon, JavaScript, Wallet, Telegram, Registrar, Nameserver
-- [ ] Edge types: resolves_to, hosted_by, uses_certificate, shares_favicon, reuses_script, contains_wallet, redirects_to, registered_with, shares_nameserver
-- [ ] Serializers: DOT, GraphML, JSON
-- [ ] `alexiares graph <target>` command wired
+- [x] Node types: Domain, URL, IP, ASN, Certificate, Favicon, JavaScript, Wallet, Telegram, Registrar, Nameserver (ASN/Registrar/Telegram defined for schema completeness; not yet emitted by `FromScan` — no ASN/registrar data collected, and the spec defines no edge verb for Telegram)
+- [x] Edge types: resolves_to, hosted_by, uses_certificate, shares_favicon, reuses_script, contains_wallet, redirects_to, registered_with, shares_nameserver (hosted_by/registered_with defined but unemitted, same reason)
+- [x] Serializers: DOT, GraphML, JSON
+- [x] `alexiares graph <target>` command wired (`--format dot|graphml|json`)
 
-**Definition of Done:** exported graphs open cleanly in standard tooling (Graphviz, Gephi); round-trip JSON serialization is lossless.
+**Definition of Done:** exported graphs open cleanly in standard tooling — verified: DOT output rendered successfully with a real Graphviz install (`dot -Tsvg`); round-trip JSON serialization is lossless (verified by test). ✅
 
 ---
 
