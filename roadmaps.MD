@@ -158,9 +158,15 @@ Derived from [Alexiares Technical Specification (specs.md).md](<Alexiares Techni
 - **No regression tests.** The project has no documented historical incidents yet, so `tests/regression/` is empty by honesty, not oversight.
 - **ASN and registrar data uncollected.** No bundled IP-to-ASN database (by design — see the spec's "no external database" goal) and no WHOIS/RDAP extractor exists yet, so ASN/registrar signature fields and graph nodes are defined but never populated.
 - **Telegram has no graph edge type.** The spec defines a Telegram node type but no corresponding edge verb, so Telegram indicators appear in evidence and correlation but not in `alexiares graph` output.
+- **No canonical signature database yet.** The intended architecture (per the Signature Repository section of the spec) is that signatures live in a separate, vetted-contributor GitHub repository — this repo's `signatures/` is a bundled starter set, not the source of truth. That external repository doesn't exist yet, so `update.source_url` in `configs/default.yaml` has no real default to point at. `internal/update` is fully built and tested against the *mechanism* (fetch, Ed25519-verify, atomically install a signed tarball) — what's missing is the repository itself, its contribution/review workflow, and the CI job that builds and signs the tarball on merge.
 
 ## Future Phases (post-V1)
 
+- **V1.5 — Canonical signature database** (concrete next step, not yet scheduled)
+  - Stand up a separate GitHub repository (e.g. `alexiares-signatures`) as the source of truth for signatures, decoupled from this CLI's release cycle
+  - Define its contribution workflow: PR → vetted-maintainer review → merge, mirroring the validation this repo already enforces (YAML schema, hash format, duplicate-ID detection)
+  - CI on that repository builds `signatures.tar.gz`, signs it with the maintainers' Ed25519 key, and publishes both to a stable URL (e.g. GitHub Releases)
+  - Point `configs/default.yaml`'s `update.source_url` and `update.public_key` at that published feed, so a fresh `alexiares` install has a real default instead of an empty one
 - **V2**
   - Passive DNS integration
   - Certificate transparency monitoring

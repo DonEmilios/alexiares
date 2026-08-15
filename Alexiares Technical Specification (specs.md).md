@@ -804,6 +804,12 @@ Validation:
 - duplicate detection
 - maintainer review
 
+Distribution:
+
+The canonical signature intelligence does not live inside the Alexiares CLI repository. It lives in a separate, dedicated GitHub repository maintained by vetted contributors, decoupled from the CLI's own release cycle — the same relationship Homebrew has to homebrew-core, or a YARA/Semgrep engine has to its rule registry. Access to that repository is access-controlled: contributors submit signatures via PR, a maintainer reviews and merges, and CI builds, signs, and publishes the resulting archive.
+
+The CLI repository's own `signatures/` directory is a bundled starter/example set only, not the source of truth. `alexiares update` (see Update System, below) is how a local installation stays current against the canonical repository.
+
 ---
 
 # Update System
@@ -812,13 +818,15 @@ Validation:
 alexiares update
 ```
 
+Fetches the current signature archive and its detached signature from the source configured in `update.source_url` (`~/.alexiares/config.yaml`), verifies the signature against `update.public_key`, and — only on success — replaces the local signature directory (`signatures.path`) with the verified contents.
+
 Updates:
 
 - signatures
 - rules
 - schemas
 
-Updates should be cryptographically signed.
+Updates must be cryptographically signed; an update that fails verification is rejected outright and never touches disk. There is no hardcoded default `update.source_url` — it points at whichever GitHub-hosted signature database repository the operator (or a future Alexiares-maintained default) chooses to trust.
 
 ---
 

@@ -162,6 +162,8 @@ confidence: high
 
 Every artifact carries a timeline (`FirstSeen`, `ReportedAt`, `VerifiedAt`, `LastSeen`) so observation time is never confused with activity time. Signature updates are cryptographically signed.
 
+The signature shown above lives in this repo as a bundled example. In the intended end state, the canonical, continuously updated set lives in a separate GitHub repository maintained by vetted contributors — `alexiares update` pulls from it, the same way `brew` pulls formulae from homebrew-core rather than bundling them.
+
 ---
 
 ## Configuration
@@ -207,7 +209,7 @@ Not a SIEM, not a SOC platform, not a blockchain explorer, not a smart contract 
 ## Contributing
 
 - **Report malicious infrastructure** by submitting an observation (domain, evidence, screenshots, tx hashes) to `observations/`.
-- **Propose signatures** via PR to `signatures/` — all signatures pass YAML schema validation, hash validation, duplicate detection, and maintainer review.
+- **Propose signatures** — the canonical signature database is a separate, vetted-contributor GitHub repository, not this one. This repo's `signatures/` directory is a bundled starter set, not the source of truth; `alexiares update` is how an installation pulls the current, maintainer-reviewed set from the canonical repository. (The canonical repository isn't published yet — signature contribution guidance will point here once it is.) All signatures pass YAML schema validation, hash validation, duplicate detection, and maintainer review regardless of which repository they land in.
 - **Code contributions** welcome: extractors, output formats, and test samples (unit, integration, regression, and golden tests).
 
 See [roadmaps.MD](roadmaps.MD) for the build plan and [the technical specification](<Alexiares Technical Specification (specs.md).md>) for full details.
