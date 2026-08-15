@@ -75,17 +75,17 @@ Derived from [Alexiares Technical Specification (specs.md).md](<Alexiares Techni
 
 ## Phase 4 — Intelligence Model
 
-- [ ] **Observations layer** (untrusted community reports)
-  - [ ] YAML schema: type, domain, reported_at, reporter, evidence (screenshot, tx_hash, wallet)
-  - [ ] Never auto-promoted to signatures
-- [ ] **Signatures layer** (maintainer-reviewed, trusted)
-  - [ ] YAML schema: id, description, favicon hashes, JS hashes, wallets, telegram patterns, confidence
-  - [ ] Repository structure: `favicon/`, `javascript/`, `certificates/`, `wallets/`, `telegram/`, `domains/`, `infrastructure/`, `rules/`
-  - [ ] Validation: YAML schema check, hash validation, duplicate detection, maintainer review flow
-- [ ] **Temporal intelligence**
-  - [ ] `Timeline` struct on every artifact (FirstSeen, ReportedAt, VerifiedAt, LastSeen)
+- [x] **Observations layer** (untrusted community reports)
+  - [x] YAML schema: type, domain, reported_at, reporter, evidence (screenshot, tx_hash, wallet)
+  - [x] Never auto-promoted to signatures (structurally enforced — `internal/intel` has no Observation→Signature conversion path, documented in the package doc)
+- [x] **Signatures layer** (maintainer-reviewed, trusted)
+  - [x] YAML schema: id, description, favicon hashes, JS hashes, wallets, telegram patterns, confidence
+  - [x] Repository structure: `favicon/`, `javascript/`, `certificates/`, `wallets/`, `telegram/`, `domains/`, `infrastructure/`, `rules/`
+  - [x] Validation: YAML schema check, hash validation, duplicate detection, maintainer review flow (PR-based, per codestyle.md)
+- [x] **Temporal intelligence**
+  - [x] `Timeline` struct on every artifact (FirstSeen, ReportedAt, VerifiedAt, LastSeen)
 
-**Definition of Done:** invalid signatures rejected at load; observation vs. signature separation enforced; timelines preserved end-to-end.
+**Definition of Done:** invalid signatures rejected at load; observation vs. signature separation enforced; timelines preserved end-to-end. ✅
 
 ---
 

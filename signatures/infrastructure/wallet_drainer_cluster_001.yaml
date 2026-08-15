@@ -1,0 +1,16 @@
+# Example maintainer-reviewed signature, matching the format documented
+# in the technical specification. Real signatures are added via PR to
+# this directory tree and pass LoadSignatures' schema validation before
+# merge (see codestyle.md's Signature Repository section).
+id: wallet_drainer_cluster_001
+description: Fake wallet connection infrastructure reusing a shared drainer script and exfiltration bot
+favicon:
+  murmur3:
+    - -204998123
+javascript:
+  sha256:
+    - e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+telegram:
+  patterns:
+    - api.telegram.org/bot
+confidence: high

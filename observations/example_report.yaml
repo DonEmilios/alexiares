@@ -1,0 +1,11 @@
+# Example community observation. Observations are untrusted by default
+# and are never automatically promoted to signatures/ — a maintainer
+# reviews the evidence and writes a new signature file by hand if it
+# warrants one. See internal/intel's package doc for why.
+type: observation
+domain: claim-airdrop-example.xyz
+reported_at: 2026-01-15T10:30:00Z
+reporter: community-analyst
+evidence:
+  tx_hash: "0xabc123"
+  wallet: "0x123456789abcdef0123456789abcdef01234567"
