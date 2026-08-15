@@ -1,4 +1,4 @@
-package collector
+package tls
 
 import (
 	"crypto/ecdsa"
@@ -6,7 +6,7 @@ import (
 	"crypto/elliptic"
 	"crypto/rand"
 	"crypto/rsa"
-	"crypto/tls"
+	stdtls "crypto/tls"
 	"crypto/x509"
 	"crypto/x509/pkix"
 	"math/big"
@@ -35,27 +35,27 @@ func selfSignedCert(t *testing.T, pub, priv any) *x509.Certificate {
 	return cert
 }
 
-func TestTLSDataNilConnectionState(t *testing.T) {
-	if got := tlsData(nil); got != nil {
-		t.Errorf("tlsData(nil) = %+v, want nil", got)
+func TestFromConnectionStateNil(t *testing.T) {
+	if got := FromConnectionState(nil); got != nil {
+		t.Errorf("FromConnectionState(nil) = %+v, want nil", got)
 	}
-	if got := tlsData(&tls.ConnectionState{}); got != nil {
-		t.Errorf("tlsData(empty) = %+v, want nil", got)
+	if got := FromConnectionState(&stdtls.ConnectionState{}); got != nil {
+		t.Errorf("FromConnectionState(empty) = %+v, want nil", got)
 	}
 }
 
-func TestTLSDataExtractsFields(t *testing.T) {
+func TestFromConnectionStateExtractsFields(t *testing.T) {
 	priv, err := rsa.GenerateKey(rand.Reader, 2048)
 	if err != nil {
 		t.Fatalf("GenerateKey() error = %v", err)
 	}
 	cert := selfSignedCert(t, &priv.PublicKey, priv)
 
-	got := tlsData(&tls.ConnectionState{PeerCertificates: []*x509.Certificate{cert}})
+	got := FromConnectionState(&stdtls.ConnectionState{PeerCertificates: []*x509.Certificate{cert}})
 	if got == nil {
-		t.Fatal("tlsData() = nil, want populated TLSData")
+		t.Fatal("FromConnectionState() = nil, want populated TLSData")
 	}
-	if len(got.SHA256) != 64 { // hex-encoded SHA-256
+	if len(got.SHA256) != 64 {
 		t.Errorf("SHA256 = %q, want 64 hex chars", got.SHA256)
 	}
 	if got.SerialHex != "2a" {

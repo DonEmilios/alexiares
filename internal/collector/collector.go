@@ -13,11 +13,6 @@ package collector
 
 import (
 	"context"
-	"crypto/ecdsa"
-	"crypto/ed25519"
-	"crypto/rsa"
-	"crypto/sha256"
-	"crypto/tls"
 	"fmt"
 	"io"
 	"net/http"
@@ -29,6 +24,7 @@ import (
 	"golang.org/x/net/html/atom"
 
 	"github.com/alexiares/alexiares/internal/artifact"
+	tlsextract "github.com/alexiares/alexiares/internal/tls"
 )
 
 // Options configures a Collector's network behavior. All fields have
@@ -159,7 +155,7 @@ func (c *Collector) Collect(ctx context.Context, target string) (artifact.RawRes
 		Headers:    resp.Header,
 		HTML:       htmlBody,
 		Redirects:  redirects,
-		TLS:        tlsData(resp.TLS),
+		TLS:        tlsextract.FromConnectionState(resp.TLS),
 		Timeline:   artifact.Timeline{FirstSeen: now, LastSeen: now},
 	}
 
@@ -214,43 +210,6 @@ func (c *Collector) fetchBytes(ctx context.Context, u string) []byte {
 		return nil
 	}
 	return body
-}
-
-// tlsData converts the standard library's connection state into
-// artifact.TLSData, or returns nil for a plain HTTP response.
-func tlsData(state *tls.ConnectionState) *artifact.TLSData {
-	if state == nil || len(state.PeerCertificates) == 0 {
-		return nil
-	}
-	cert := state.PeerCertificates[0]
-
-	return &artifact.TLSData{
-		SHA256:    fmt.Sprintf("%x", sha256.Sum256(cert.Raw)),
-		SerialHex: cert.SerialNumber.Text(16),
-		Issuer:    cert.Issuer.String(),
-		Subject:   cert.Subject.String(),
-		DNSNames:  cert.DNSNames,
-		NotBefore: cert.NotBefore,
-		NotAfter:  cert.NotAfter,
-		KeyType:   cert.PublicKeyAlgorithm.String(),
-		KeyBits:   publicKeyBits(cert.PublicKey),
-	}
-}
-
-// publicKeyBits reports the key size in bits for the certificate
-// public key types Go's x509 package can produce. Unrecognized key
-// types report 0 rather than guessing.
-func publicKeyBits(pub any) int {
-	switch k := pub.(type) {
-	case *rsa.PublicKey:
-		return k.N.BitLen()
-	case *ecdsa.PublicKey:
-		return k.Curve.Params().BitSize
-	case ed25519.PublicKey:
-		return len(k) * 8
-	default:
-		return 0
-	}
 }
 
 // discoverAssets walks the parsed HTML for <script src> URLs and the
