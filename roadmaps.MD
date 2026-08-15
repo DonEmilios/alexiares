@@ -26,23 +26,23 @@ Derived from [Alexiares Technical Specification (specs.md).md](<Alexiares Techni
 
 ## Phase 1 — Collector (Safe Acquisition)
 
-- [ ] **Input parsing**
-  - [ ] Accept URL, domain, IP
-  - [ ] Accept wallet addresses: Ethereum, Bitcoin, Solana, Cardano, Tron, TON
-  - [ ] Batch file input + stdin
-- [ ] **Network collection**
-  - [ ] DNS resolution
-  - [ ] HTTP(S) requests with redirect tracking
-  - [ ] TLS handshake capture
-  - [ ] HTML, favicon, and JavaScript download
-  - [ ] Header collection
-- [ ] **Safety guarantees**
-  - [ ] No JavaScript execution
-  - [ ] No wallet interaction, no form submission, no smart-contract calls
-  - [ ] Configurable timeouts + user-agent management
-  - [ ] `RawResponse` struct populated (URL, FinalURL, StatusCode, Headers, HTML, Scripts, Favicon, TLS, Redirects)
+- [x] **Input parsing**
+  - [x] Accept URL, domain, IP (`internal/collector.Classify`)
+  - [x] Accept wallet addresses: Ethereum, Bitcoin, Solana, Cardano, Tron, TON (`internal/wallet.Classify`)
+  - [x] Batch file input + stdin (`internal/collector.ReadTargets`; CLI wiring lands with `scan` orchestration in Phase 7)
+- [x] **Network collection**
+  - [x] DNS resolution (implicit via Go's HTTP client dialer)
+  - [x] HTTP(S) requests with redirect tracking
+  - [x] TLS handshake capture
+  - [x] HTML, favicon, and JavaScript download
+  - [x] Header collection
+- [x] **Safety guarantees**
+  - [x] No JavaScript execution
+  - [x] No wallet interaction, no form submission, no smart-contract calls
+  - [x] Configurable timeouts + user-agent management
+  - [x] `RawResponse` struct populated (URL, FinalURL, StatusCode, Headers, HTML, Scripts, Favicon, TLS, Redirects)
 
-**Definition of Done:** `RawResponse` produced for any valid input; unsafe operations are structurally impossible; timeouts respected.
+**Definition of Done:** `RawResponse` produced for any valid input; unsafe operations are structurally impossible; timeouts respected. ✅
 
 ---
 
