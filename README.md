@@ -212,7 +212,7 @@ Not a SIEM, not a SOC platform, not a blockchain explorer, not a smart contract 
 - **Propose signatures** — the canonical signature database is a separate, vetted-contributor GitHub repository, not this one. This repo's `signatures/` directory is a bundled starter set, not the source of truth; `alexiares update` is how an installation pulls the current, maintainer-reviewed set from the canonical repository. (The canonical repository isn't published yet — signature contribution guidance will point here once it is.) All signatures pass YAML schema validation, hash validation, duplicate detection, and maintainer review regardless of which repository they land in.
 - **Code contributions** welcome: extractors, output formats, and test samples (unit, integration, regression, and golden tests).
 
-See [roadmaps.MD](roadmaps.MD) for the build plan and [the technical specification](<Alexiares Technical Specification (specs.md).md>) for full details.
+See [roadmaps.MD](roadmaps.MD) for the build plan, [the technical specification](<Alexiares Technical Specification (specs.md).md>) for the system-level architecture, and [docs/](docs/) for a per-module reference — what each package does and why, one file per `internal/` package.
 
 ## License
 
