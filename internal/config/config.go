@@ -6,6 +6,8 @@
 package config
 
 import (
+	"crypto/ed25519"
+	"encoding/hex"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -37,11 +39,39 @@ type Output struct {
 	Format string `yaml:"format"`
 }
 
+// Update holds settings for `alexiares update`. Both fields must be
+// set for an update to run at all: Alexiares never fetches signature
+// updates without a trusted key to verify them against.
+type Update struct {
+	// SourceURL is the base URL serving "signatures.tar.gz" and
+	// "signatures.tar.gz.sig".
+	SourceURL string `yaml:"source_url"`
+	// PublicKey is a hex-encoded Ed25519 public key.
+	PublicKey string `yaml:"public_key"`
+}
+
+// DecodedPublicKey parses PublicKey as hex-encoded Ed25519 key
+// material.
+func (u Update) DecodedPublicKey() (ed25519.PublicKey, error) {
+	if u.PublicKey == "" {
+		return nil, fmt.Errorf("update.public_key is not configured")
+	}
+	key, err := hex.DecodeString(u.PublicKey)
+	if err != nil {
+		return nil, fmt.Errorf("update.public_key is not valid hex: %w", err)
+	}
+	if len(key) != ed25519.PublicKeySize {
+		return nil, fmt.Errorf("update.public_key is %d bytes, want %d", len(key), ed25519.PublicKeySize)
+	}
+	return ed25519.PublicKey(key), nil
+}
+
 // Config is the fully resolved Alexiares configuration.
 type Config struct {
 	Network    Network    `yaml:"network"`
 	Signatures Signatures `yaml:"signatures"`
 	Output     Output     `yaml:"output"`
+	Update     Update     `yaml:"update"`
 }
 
 // Default returns Alexiares' built-in configuration, used whenever no

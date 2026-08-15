@@ -7,3 +7,10 @@ signatures:
   path: ~/.alexiares/signatures
 output:
   format: terminal
+# `alexiares update` refuses to run until both fields below are set.
+# There is no default update source: self-hosting maintainers publish
+# signatures.tar.gz + signatures.tar.gz.sig at a URL of their choosing
+# and configure trust in that source explicitly, here.
+update:
+  source_url: ""
+  public_key: ""

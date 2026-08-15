@@ -130,8 +130,8 @@ Derived from [Alexiares Technical Specification (specs.md).md](<Alexiares Techni
 
 ## Phase 8 — Update System & Hardening
 
-- [ ] `alexiares update` — pulls signatures, rules, schemas
-- [ ] Cryptographic signing + verification of updates
+- [x] `alexiares update` — pulls signatures, rules, schemas (verified end-to-end against a real signed archive over local HTTP)
+- [x] Cryptographic signing + verification of updates (Ed25519; unsigned/wrong-key/tampered updates rejected and never touch disk, verified by test)
 - [ ] Security audit against non-goals: never connects wallets, executes JS, submits forms, touches contracts or chain state
 - [ ] **Performance targets**
   - [ ] Single URL scan < 2 seconds

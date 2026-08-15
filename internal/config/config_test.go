@@ -3,6 +3,7 @@ package config_test
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/alexiares/alexiares/internal/config"
@@ -58,5 +59,31 @@ func TestNetworkTimeout(t *testing.T) {
 	n := config.Network{TimeoutSeconds: 5}
 	if got, want := n.Timeout().Seconds(), 5.0; got != want {
 		t.Errorf("Timeout() = %.0fs, want %.0fs", got, want)
+	}
+}
+
+func TestUpdateDecodedPublicKey(t *testing.T) {
+	// 32 zero bytes hex-encoded is not a meaningful key, but it is
+	// correctly *shaped* Ed25519 key material, which is all
+	// DecodedPublicKey checks.
+	valid := strings.Repeat("00", 32)
+
+	tests := []struct {
+		name    string
+		key     string
+		wantErr bool
+	}{
+		{"empty", "", true},
+		{"not hex", "not-hex-at-all!!", true},
+		{"wrong length", "ab", true},
+		{"valid shape", valid, false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			_, err := config.Update{PublicKey: tt.key}.DecodedPublicKey()
+			if (err != nil) != tt.wantErr {
+				t.Errorf("DecodedPublicKey() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
 	}
 }
