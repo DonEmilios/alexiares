@@ -48,16 +48,16 @@ Derived from [Alexiares Technical Specification (specs.md).md](<Alexiares Techni
 
 ## Phase 2 — Extractors
 
-- [ ] **DNS Extractor** — A, AAAA, CNAME, MX, NS, TXT, ASN, PTR → `DNSArtifacts`
-- [ ] **TLS Extractor** — SHA256 fingerprint, serial, issuer, subject, SAN, validity, key type
-- [ ] **HTML Extractor** — DOM structure, forms, input/hidden fields, metadata, comments, external resources
-- [ ] **JavaScript Extractor** — script URLs, inline scripts, SHA256 hashes, API endpoints, Telegram refs, Discord webhooks, wallet libraries, WalletConnect refs
-- [ ] **Favicon Extractor** — MurmurHash3 + SHA256
-- [ ] **Wallet Extractor** — detect ETH/BTC/SOL/ADA/TRON/TON addresses, ENS (ADA handles later)
-- [ ] **Telegram Extractor** — bot tokens, chat IDs, `api.telegram.org`, `t.me` links
-- [ ] **Redirect Extractor** — HTTP redirects, meta refresh, JavaScript redirects
+- [x] **DNS Extractor** — A, AAAA, CNAME, MX, NS, TXT, ASN, PTR → `DNSArtifacts` (ASN/ASNOrg intentionally empty; no bundled IP-to-ASN database, per the "no external database" performance goal)
+- [x] **TLS Extractor** — SHA256 fingerprint, serial, issuer, subject, SAN, validity, key type
+- [x] **HTML Extractor** — DOM structure, forms, input/hidden fields, metadata, comments, external resources
+- [x] **JavaScript Extractor** — script URLs, inline scripts, SHA256 hashes, API endpoints, Telegram refs, Discord webhooks, wallet libraries, WalletConnect refs
+- [x] **Favicon Extractor** — MurmurHash3 + SHA256 (verified against an independent Python mmh3 implementation; matches the Shodan favicon-hash convention for signature interoperability)
+- [x] **Wallet Extractor** — detect ETH/BTC/SOL/ADA/TRON/TON addresses, ENS (ADA handles later)
+- [x] **Telegram Extractor** — bot tokens, chat IDs, `api.telegram.org`, `t.me` links
+- [x] **Redirect Extractor** — HTTP redirects (collector), meta refresh, JavaScript redirects
 
-**Definition of Done:** each extractor has unit tests; extractors run independently and produce typed artifact structs.
+**Definition of Done:** each extractor has unit tests; extractors run independently and produce typed artifact structs. ✅
 
 ---
 
