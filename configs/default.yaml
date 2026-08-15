@@ -1,0 +1,9 @@
+# Default Alexiares configuration.
+# Copy to ~/.alexiares/config.yaml to override.
+network:
+  timeout: 10
+  user_agent: Alexiares/0.1
+signatures:
+  path: ~/.alexiares/signatures
+output:
+  format: terminal

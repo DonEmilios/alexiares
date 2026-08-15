@@ -1,0 +1,20 @@
+# Build artifacts
+/bin/
+/dist/
+/alexiares
+*.exe
+
+# Go
+*.test
+*.out
+coverage.txt
+
+# OS
+.DS_Store
+
+# Editors
+.idea/
+*.swp
+
+# Local config overrides
+configs/local.yaml
