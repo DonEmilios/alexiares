@@ -124,3 +124,21 @@ func TestLookupUnresolvableDomainReturnsEmptyNotError(t *testing.T) {
 		t.Errorf("IPs = %v, want empty for unresolvable domain", got.IPs)
 	}
 }
+
+// TestLookupSuppressesNullMXRecord covers an RFC 7505 "null MX"
+// record (Host "."), which net.LookupMX returns for domains that
+// explicitly accept no mail. Trimming its trailing dot yields an
+// empty string, which must be dropped rather than reported as an MX
+// entry — regression test for a real bug found scanning example.com.
+func TestLookupSuppressesNullMXRecord(t *testing.T) {
+	fake := &fakeResolver{
+		hosts: map[string][]string{"nomail.example": {"203.0.113.1"}},
+		mx:    map[string][]*net.MX{"nomail.example": {{Host: ".", Pref: 0}}},
+	}
+
+	got := dns.NewWithResolver(fake).Lookup(context.Background(), "nomail.example")
+
+	if len(got.MX) != 0 {
+		t.Errorf("MX = %v, want empty for a null MX record, not a blank entry", got.MX)
+	}
+}

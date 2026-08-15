@@ -78,13 +78,21 @@ func (e *Extractor) Lookup(ctx context.Context, domain string) artifact.DNSArtif
 
 	if mxs, err := e.resolver.LookupMX(ctx, domain); err == nil {
 		for _, mx := range mxs {
-			out.MX = append(out.MX, strings.TrimSuffix(mx.Host, "."))
+			// RFC 7505 "null MX": a record with Host "." explicitly
+			// declares the domain accepts no mail, and trims down to
+			// an empty string — that's a real, meaningful absence of
+			// a mail server, not a record to report.
+			if host := strings.TrimSuffix(mx.Host, "."); host != "" {
+				out.MX = append(out.MX, host)
+			}
 		}
 	}
 
 	if nss, err := e.resolver.LookupNS(ctx, domain); err == nil {
 		for _, ns := range nss {
-			out.Nameservers = append(out.Nameservers, strings.TrimSuffix(ns.Host, "."))
+			if host := strings.TrimSuffix(ns.Host, "."); host != "" {
+				out.Nameservers = append(out.Nameservers, host)
+			}
 		}
 	}
 
@@ -98,7 +106,9 @@ func (e *Extractor) Lookup(ctx context.Context, domain string) artifact.DNSArtif
 			continue
 		}
 		for _, n := range names {
-			out.PTR = append(out.PTR, strings.TrimSuffix(n, "."))
+			if host := strings.TrimSuffix(n, "."); host != "" {
+				out.PTR = append(out.PTR, host)
+			}
 		}
 	}
 
