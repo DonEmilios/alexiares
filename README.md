@@ -14,6 +14,25 @@ It is **defensive by design**: given a URL, domain, IP, or wallet address, Alexi
 
 ---
 
+## Banner
+
+Launch `alexiares` with no arguments in a real terminal and this is what greets you — gated on an actual TTY, so it never leaks into piped or scripted output:
+
+```text
+  ___   _      _______   _______  ___  ______ _____ _____ 
+ / _ \ | |    |  ___\ \ / /_   _|/ _ \ | ___ \  ___/  ___|
+/ /_\ \| |    | |__  \ V /  | | / /_\ \| |_/ / |__ \ `--. 
+|  _  || |    |  __| /   \  | | |  _  ||    /|  __| `--. \
+| | | || |____| |___/ /^\ \_| |_| | | || |\ \| |___/\__/ /
+\_| |_/\_____/\____/\/   \/\___/\_| |_/\_| \_\____/\____/ 
+
+        guard the gate before the wallet connects
+```
+
+The wordmark is generated with [figlet](http://www.figlet.org/) (font: `doom`) rather than hand-drawn — see [`cmd/alexiares/banner.go`](cmd/alexiares/banner.go).
+
+---
+
 ## Why Alexiares?
 
 A phishing kit can clone a frontend in minutes, but it almost always reuses infrastructure: the same favicon, the same drainer script, the same TLS certificate, the same exfiltration bot, the same wallets. Alexiares fingerprints those artifacts and correlates them against community-maintained intelligence, so one reported drainer exposes the entire cluster behind it.
@@ -216,6 +235,14 @@ Not a SIEM, not a SOC platform, not a blockchain explorer, not a smart contract 
 - See [CONTRIBUTING.md](CONTRIBUTING.md) for the full observation/signature review process: exact YAML structure, maintainer roles and requirements, and the safety rules that gate every merge.
 
 See [roadmaps.MD](roadmaps.MD) for the build plan, [the technical specification](<Alexiares Technical Specification (specs.md).md>) for the system-level architecture, and [docs/](docs/) for a per-module reference — what each package does and why, one file per `internal/` package.
+
+---
+
+## Contributors
+
+Alexiares is maintained by [@DonEmilios](https://github.com/DonEmilios). Contributions — code, signatures, and observations — are welcome; see [CONTRIBUTING.md](CONTRIBUTING.md) for the review process and the roles behind it.
+
+[![Contributors](https://contrib.rocks/image?repo=DonEmilios/alexiares)](https://github.com/DonEmilios/alexiares/graphs/contributors)
 
 ## License
 
