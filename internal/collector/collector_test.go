@@ -14,11 +14,12 @@ import (
 func testCollector(t *testing.T) *collector.Collector {
 	t.Helper()
 	return collector.New(collector.Options{
-		Timeout:      2 * time.Second,
-		UserAgent:    "alexiares-test",
-		MaxRedirects: 3,
-		MaxBodyBytes: 1 << 20,
-		MaxScripts:   10,
+		Timeout:              2 * time.Second,
+		UserAgent:            "alexiares-test",
+		MaxRedirects:         3,
+		MaxBodyBytes:         1 << 20,
+		MaxScripts:           10,
+		AllowPrivateNetworks: true, // tests target httptest servers on 127.0.0.1
 	})
 }
 
@@ -92,7 +93,7 @@ func TestCollectCapsRedirectChain(t *testing.T) {
 	srv := httptest.NewServer(mux)
 	defer srv.Close()
 
-	c := collector.New(collector.Options{MaxRedirects: 2, Timeout: 2 * time.Second})
+	c := collector.New(collector.Options{MaxRedirects: 2, Timeout: 2 * time.Second, AllowPrivateNetworks: true})
 	raw, err := c.Collect(context.Background(), srv.URL+"/loop")
 	if err != nil {
 		t.Fatalf("Collect() error = %v", err)
@@ -142,7 +143,7 @@ func TestCollectBoundsBodySize(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	c := collector.New(collector.Options{MaxBodyBytes: 1024, Timeout: 2 * time.Second})
+	c := collector.New(collector.Options{MaxBodyBytes: 1024, Timeout: 2 * time.Second, AllowPrivateNetworks: true})
 	raw, err := c.Collect(context.Background(), srv.URL)
 	if err != nil {
 		t.Fatalf("Collect() error = %v", err)
@@ -156,5 +157,26 @@ func TestCollectInvalidTargetErrors(t *testing.T) {
 	c := testCollector(t)
 	if _, err := c.Collect(context.Background(), "http://127.0.0.1:0/unreachable"); err == nil {
 		t.Error("Collect() error = nil, want error for unreachable target")
+	}
+}
+
+// TestCollectRejectsPrivateTargetByDefault is a regression test for
+// the collector's SSRF protection: Alexiares scans attacker-supplied
+// targets, so a Collector built without opting into
+// AllowPrivateNetworks must never connect to a loopback/private
+// address. The same DialContext backs every hop of a request
+// (including redirects), so blocking it here also proves a redirect
+// to a private address would be blocked identically.
+func TestCollectRejectsPrivateTargetByDefault(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer srv.Close()
+
+	c := collector.New(collector.Options{Timeout: 2 * time.Second}) // AllowPrivateNetworks defaults false
+	if _, err := c.Collect(context.Background(), srv.URL); err == nil {
+		t.Fatal("Collect() against a loopback target with AllowPrivateNetworks unset: error = nil, want rejection")
+	} else if !strings.Contains(err.Error(), "non-public") {
+		t.Errorf("error = %q, want it to explain the connection was refused as non-public", err)
 	}
 }

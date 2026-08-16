@@ -1,7 +1,7 @@
 # `internal/collector`
 
 **Source:** [`internal/collector/`](../internal/collector/) (`collector.go`, `input.go`)
-**Tests:** `collector_test.go`, `input_test.go`, `tls_internal_test.go` — 88.1% coverage
+**Tests:** `collector_test.go`, `input_test.go`, `tls_internal_test.go` — 83.7% coverage
 **Position in pipeline:** first stage — everything downstream reads from its output (`artifact.RawResponse`)
 
 ## Purpose
@@ -19,7 +19,7 @@ Two distinct jobs live in this package:
 func Classify(raw string) Input
 func ReadTargets(r io.Reader) ([]string, error)
 
-type Options struct { Timeout, UserAgent, MaxRedirects, MaxBodyBytes, MaxScripts }
+type Options struct { Timeout, UserAgent, MaxRedirects, MaxBodyBytes, MaxScripts, AllowPrivateNetworks }
 func DefaultOptions() Options
 func New(opts Options) *Collector
 func (c *Collector) Collect(ctx context.Context, target string) (artifact.RawResponse, error)
@@ -37,7 +37,9 @@ func (c *Collector) Collect(ctx context.Context, target string) (artifact.RawRes
 
 **A failed script or favicon download doesn't fail the scan.** `fetchBytes` returns `nil` on any error (bad status, timeout, malformed URL) and callers treat `nil` as "absent," not "fatal." This is the same "partial collection is a result, not an error" policy the DNS extractor follows — see [`dns.md`](dns.md).
 
-**Two separate `http.Client`s exist inside `Collector`** — one built per-`Collect()`-call for the primary page fetch (so its redirect log is call-scoped), and one long-lived one (`assets`) for script/favicon fetches, which don't need redirect *logging*, just a hop cap.
+**Two separate `http.Client`s exist inside `Collector`** — one built per-`Collect()`-call for the primary page fetch (so its redirect log is call-scoped), and one long-lived one (`assets`) for script/favicon fetches, which don't need redirect *logging*, just a hop cap. Both share the same `*http.Transport`, and therefore the same `DialContext` — including its SSRF protection (below) — so the fix only has to live in one place.
+
+**Every connection is resolved and validated before it's dialed, by default.** `safeDialContext` is Alexiares' answer to the fact that it exists specifically to fetch attacker-controlled URLs: a malicious target's DNS answer or a redirect `Location` header could otherwise point the scanning host at its own loopback interface, an RFC 1918 private address, or a cloud instance's `169.254.169.254` metadata endpoint. The dial function resolves the hostname exactly once and connects to the specific IP it validated as public — it never does a second, independent lookup at connect time, which is what closes the DNS-rebinding gap a naive "check the hostname, then let the transport resolve it again" approach would leave open. This applies uniformly to the initial request and every redirect hop, since they all go through the same `DialContext`. Set `Options.AllowPrivateNetworks` to disable this — only for an operator who intends to point Alexiares at their own internal infrastructure.
 
 **Asset discovery is a real HTML parse (`golang.org/x/net/html`), not a regex.** `discoverAssets` walks the parsed tree for `<script src>` and `<link rel="icon">`, resolving relative URLs against the final (post-redirect) URL. If no favicon link is found, it falls back to `/favicon.ico` by convention.
 

@@ -58,8 +58,9 @@ func runInfrastructureScan(cmd *cobra.Command, cfg config.Config, target collect
 	domain := hostnameOf(target.URL)
 
 	c := collector.New(collector.Options{
-		Timeout:   cfg.Network.Timeout(),
-		UserAgent: cfg.Network.UserAgent,
+		Timeout:              cfg.Network.Timeout(),
+		UserAgent:            cfg.Network.UserAgent,
+		AllowPrivateNetworks: cfg.Network.AllowPrivateNetworks,
 	})
 	raw, err := c.Collect(ctx, target.URL)
 	if err != nil {

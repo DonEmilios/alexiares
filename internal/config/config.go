@@ -22,6 +22,11 @@ type Network struct {
 	// collector. Zero falls back to Default's timeout.
 	TimeoutSeconds int    `yaml:"timeout"`
 	UserAgent      string `yaml:"user_agent"`
+	// AllowPrivateNetworks disables the collector's default block on
+	// loopback, private, link-local, and multicast destinations. Only
+	// enable this to intentionally scan infrastructure on your own
+	// network — see collector.Options.AllowPrivateNetworks.
+	AllowPrivateNetworks bool `yaml:"allow_private_networks"`
 }
 
 // Timeout returns the configured network timeout as a time.Duration.

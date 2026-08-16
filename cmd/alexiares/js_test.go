@@ -15,7 +15,7 @@ func TestJSCommandExtractsArtifacts(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	stdout, _, err := execute(t, "js", srv.URL)
+	stdout, _, err := execute(t, "--config", writeNetworkTestConfig(t), "js", srv.URL)
 	if err != nil {
 		t.Fatalf("execute(js) error = %v", err)
 	}

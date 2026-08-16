@@ -30,8 +30,9 @@ var graphCmd = &cobra.Command{
 		domain := hostnameOf(args[0])
 
 		c := collector.New(collector.Options{
-			Timeout:   cfg.Network.Timeout(),
-			UserAgent: cfg.Network.UserAgent,
+			Timeout:              cfg.Network.Timeout(),
+			UserAgent:            cfg.Network.UserAgent,
+			AllowPrivateNetworks: cfg.Network.AllowPrivateNetworks,
 		})
 		raw, err := c.Collect(cmd.Context(), target.URL)
 		if err != nil {

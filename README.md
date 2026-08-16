@@ -174,6 +174,7 @@ The signature shown above lives in this repo as a bundled example. In the intend
 network:
   timeout: 10
   user_agent: Alexiares/1.0
+  allow_private_networks: false # only for scanning your own internal infrastructure
 signatures:
   path: ~/.alexiares/signatures
 output:
@@ -191,6 +192,7 @@ Alexiares is analysis-only. It will **never**:
 - submit forms
 - interact with smart contracts
 - modify blockchain state
+- connect to a loopback, private, or link-local address by default — a malicious target's DNS answer or redirect can't be used to reach the scanning host's own network (see `network.allow_private_networks` in [Configuration](#configuration))
 
 ## Performance
 

@@ -1,8 +1,15 @@
 # Default Alexiares configuration.
 # Copy to ~/.alexiares/config.yaml to override.
+# allow_private_networks defaults to false: the collector refuses to
+# connect to loopback, private (RFC 1918), link-local, or multicast
+# addresses, since Alexiares scans attacker-controlled targets that
+# could otherwise use DNS or a redirect to reach this host's own
+# network. Only set this true to intentionally scan your own internal
+# infrastructure.
 network:
   timeout: 10
   user_agent: Alexiares/0.1
+  allow_private_networks: false
 signatures:
   path: ~/.alexiares/signatures
 output:

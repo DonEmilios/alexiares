@@ -40,7 +40,7 @@ func TestFullScanPipelineDetectsBundledSignature(t *testing.T) {
 		t.Fatalf("LoadSignatures() error = %v", err)
 	}
 
-	c := collector.New(collector.Options{Timeout: 5 * time.Second})
+	c := collector.New(collector.Options{Timeout: 5 * time.Second, AllowPrivateNetworks: true})
 	raw, err := c.Collect(context.Background(), srv.URL)
 	if err != nil {
 		t.Fatalf("Collect() error = %v", err)
@@ -93,7 +93,7 @@ func TestFullScanPipelineCleanTargetNoDetection(t *testing.T) {
 		t.Fatalf("LoadSignatures() error = %v", err)
 	}
 
-	c := collector.New(collector.Options{Timeout: 5 * time.Second})
+	c := collector.New(collector.Options{Timeout: 5 * time.Second, AllowPrivateNetworks: true})
 	raw, err := c.Collect(context.Background(), srv.URL)
 	if err != nil {
 		t.Fatalf("Collect() error = %v", err)

@@ -8,13 +8,17 @@
 // automation — it is a plain HTTP client that only reads bytes. Every
 // operation is bounded by a caller-supplied timeout and every
 // downloaded body is size-limited, so a hostile target cannot exhaust
-// memory or hang a scan.
+// memory or hang a scan. Every connection — the initial request and
+// every redirect hop — is restricted to public IP addresses, so a
+// malicious target cannot use a DNS answer or a redirect to reach the
+// scanning host's own private network or cloud metadata endpoint.
 package collector
 
 import (
 	"context"
 	"fmt"
 	"io"
+	"net"
 	"net/http"
 	"net/url"
 	"strings"
@@ -44,6 +48,14 @@ type Options struct {
 	// MaxScripts caps how many external scripts are downloaded per
 	// target.
 	MaxScripts int
+	// AllowPrivateNetworks disables the default restriction that
+	// blocks connections to loopback, private, link-local, and
+	// multicast addresses. Leave this false unless the operator
+	// explicitly intends to scan their own internal infrastructure —
+	// enabling it removes Alexiares' only defense against a target
+	// using DNS or a redirect to reach the scanning host's own
+	// network.
+	AllowPrivateNetworks bool
 }
 
 // DefaultOptions returns Alexiares' built-in collection defaults.
@@ -83,18 +95,26 @@ func (opts Options) withDefaults() Options {
 // A Collector is safe for concurrent use: Collect builds a fresh
 // per-call redirect log rather than mutating shared state.
 type Collector struct {
-	opts   Options
-	assets *http.Client // used for script/favicon fetches; no redirect logging needed
+	opts      Options
+	assets    *http.Client // used for script/favicon fetches; no redirect logging needed
+	transport *http.Transport
 }
 
 // New builds a Collector from opts. Zero-value fields in opts fall
 // back to DefaultOptions.
 func New(opts Options) *Collector {
 	opts = opts.withDefaults()
+	dial := safeDialContext(opts.Timeout)
+	if opts.AllowPrivateNetworks {
+		dial = (&net.Dialer{Timeout: opts.Timeout}).DialContext
+	}
+	transport := &http.Transport{DialContext: dial}
 	return &Collector{
-		opts: opts,
+		opts:      opts,
+		transport: transport,
 		assets: &http.Client{
-			Timeout: opts.Timeout,
+			Timeout:   opts.Timeout,
+			Transport: transport,
 			CheckRedirect: func(_ *http.Request, via []*http.Request) error {
 				if len(via) >= opts.MaxRedirects {
 					return http.ErrUseLastResponse
@@ -105,6 +125,50 @@ func New(opts Options) *Collector {
 	}
 }
 
+// safeDialContext returns a DialContext that resolves the connection
+// target exactly once and dials the specific IP it validated, rather
+// than validating a hostname and letting the transport re-resolve it
+// independently — the latter would leave a DNS-rebinding gap between
+// check and connect. Alexiares scans attacker-controlled targets, so
+// neither the initial request nor any redirect hop may be allowed to
+// land on the scanning host's own private network or cloud metadata
+// endpoint.
+func safeDialContext(timeout time.Duration) func(ctx context.Context, network, addr string) (net.Conn, error) {
+	dialer := &net.Dialer{Timeout: timeout}
+	return func(ctx context.Context, network, addr string) (net.Conn, error) {
+		host, port, err := net.SplitHostPort(addr)
+		if err != nil {
+			return nil, err
+		}
+
+		if literal := net.ParseIP(host); literal != nil {
+			if !isPublicIP(literal) {
+				return nil, fmt.Errorf("refusing to connect to non-public address %s", literal)
+			}
+			return dialer.DialContext(ctx, network, addr)
+		}
+
+		ips, err := net.DefaultResolver.LookupIPAddr(ctx, host)
+		if err != nil {
+			return nil, err
+		}
+		for _, resolved := range ips {
+			if isPublicIP(resolved.IP) {
+				return dialer.DialContext(ctx, network, net.JoinHostPort(resolved.IP.String(), port))
+			}
+		}
+		return nil, fmt.Errorf("refusing to connect to %s: no public address resolved", host)
+	}
+}
+
+// isPublicIP reports whether ip is safe for Alexiares to connect to:
+// not loopback, private (RFC 1918), link-local (which includes the
+// 169.254.169.254 cloud metadata address), multicast, or unspecified.
+func isPublicIP(ip net.IP) bool {
+	return !ip.IsLoopback() && !ip.IsPrivate() && !ip.IsLinkLocalUnicast() &&
+		!ip.IsLinkLocalMulticast() && !ip.IsMulticast() && !ip.IsUnspecified()
+}
+
 // Collect fetches target and returns everything Alexiares can safely
 // observe about it. target must already be a fetchable URL (see
 // Classify for turning raw CLI input into one).
@@ -113,7 +177,8 @@ func (c *Collector) Collect(ctx context.Context, target string) (artifact.RawRes
 
 	var redirects []artifact.Redirect
 	client := &http.Client{
-		Timeout: c.opts.Timeout,
+		Timeout:   c.opts.Timeout,
+		Transport: c.transport,
 		CheckRedirect: func(req *http.Request, via []*http.Request) error {
 			if len(via) > 0 {
 				redirects = append(redirects, artifact.Redirect{

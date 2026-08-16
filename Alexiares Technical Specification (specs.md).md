@@ -839,6 +839,7 @@ The tool must never:
 - submit forms
 - interact with smart contracts
 - modify blockchain state
+- connect to a loopback, private, or link-local address by default (SSRF protection — `internal/collector.safeDialContext` validates every connection, including redirect hops, before dialing it)
 
 Analysis only.
 

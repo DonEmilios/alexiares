@@ -15,7 +15,7 @@ func TestGraphCommandDefaultsToDOT(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	stdout, _, err := execute(t, "graph", srv.URL)
+	stdout, _, err := execute(t, "--config", writeNetworkTestConfig(t), "graph", srv.URL)
 	if err != nil {
 		t.Fatalf("execute(graph) error = %v", err)
 	}
@@ -30,7 +30,7 @@ func TestGraphCommandJSONFormat(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	stdout, _, err := execute(t, "graph", srv.URL, "--format", "json")
+	stdout, _, err := execute(t, "--config", writeNetworkTestConfig(t), "graph", srv.URL, "--format", "json")
 	if err != nil {
 		t.Fatalf("execute(graph --format json) error = %v", err)
 	}
@@ -49,7 +49,7 @@ func TestGraphCommandGraphMLFormat(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	stdout, _, err := execute(t, "graph", srv.URL, "--format", "graphml")
+	stdout, _, err := execute(t, "--config", writeNetworkTestConfig(t), "graph", srv.URL, "--format", "graphml")
 	if err != nil {
 		t.Fatalf("execute(graph --format graphml) error = %v", err)
 	}
@@ -65,7 +65,7 @@ func TestGraphCommandUnsupportedFormat(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	_, _, err := execute(t, "graph", srv.URL, "--format", "yaml")
+	_, _, err := execute(t, "--config", writeNetworkTestConfig(t), "graph", srv.URL, "--format", "yaml")
 	if err == nil {
 		t.Fatal("execute(graph --format yaml): error = nil, want rejection of unsupported format")
 	}

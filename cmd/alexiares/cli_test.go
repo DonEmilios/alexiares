@@ -39,11 +39,27 @@ func execute(t *testing.T, args ...string) (stdout, stderr string, err error) {
 // writeConfig writes a minimal config file pointing signatures.path at
 // dir and returns the config file's path, for tests that need
 // signatures loaded from a controlled location rather than the real
-// ~/.alexiares/signatures.
+// ~/.alexiares/signatures. allow_private_networks is set because
+// these tests target local httptest servers, which the collector's
+// default SSRF protection would otherwise reject as loopback.
 func writeConfig(t *testing.T, signaturesDir string) string {
 	t.Helper()
 	path := filepath.Join(t.TempDir(), "config.yaml")
-	body := "network:\n  timeout: 5\nsignatures:\n  path: " + signaturesDir + "\n"
+	body := "network:\n  timeout: 5\n  allow_private_networks: true\nsignatures:\n  path: " + signaturesDir + "\n"
+	if err := os.WriteFile(path, []byte(body), 0o600); err != nil {
+		t.Fatalf("writing test config: %v", err)
+	}
+	return path
+}
+
+// writeNetworkTestConfig writes a config file with no signatures
+// section, only network.allow_private_networks — for tests that
+// exercise a single-target command (html, js, graph, tls) against a
+// local httptest server and don't need signature loading at all.
+func writeNetworkTestConfig(t *testing.T) string {
+	t.Helper()
+	path := filepath.Join(t.TempDir(), "config.yaml")
+	body := "network:\n  timeout: 5\n  allow_private_networks: true\n"
 	if err := os.WriteFile(path, []byte(body), 0o600); err != nil {
 		t.Fatalf("writing test config: %v", err)
 	}

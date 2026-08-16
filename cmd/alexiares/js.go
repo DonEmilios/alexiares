@@ -25,8 +25,9 @@ var jsCmd = &cobra.Command{
 		}
 
 		c := collector.New(collector.Options{
-			Timeout:   cfg.Network.Timeout(),
-			UserAgent: cfg.Network.UserAgent,
+			Timeout:              cfg.Network.Timeout(),
+			UserAgent:            cfg.Network.UserAgent,
+			AllowPrivateNetworks: cfg.Network.AllowPrivateNetworks,
 		})
 		raw, err := c.Collect(cmd.Context(), target.URL)
 		if err != nil {

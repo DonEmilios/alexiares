@@ -61,7 +61,7 @@ func TestTLSCommandNoCertificateOverPlainHTTP(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	stdout, _, err := execute(t, "tls", srv.URL)
+	stdout, _, err := execute(t, "--config", writeNetworkTestConfig(t), "tls", srv.URL)
 	if err != nil {
 		t.Fatalf("execute(tls) error = %v", err)
 	}

@@ -19,7 +19,7 @@ func TestHTMLCommandExtractsArtifacts(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	stdout, _, err := execute(t, "html", srv.URL)
+	stdout, _, err := execute(t, "--config", writeNetworkTestConfig(t), "html", srv.URL)
 	if err != nil {
 		t.Fatalf("execute(html) error = %v", err)
 	}
